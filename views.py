@@ -11,7 +11,6 @@ def main():
    return render_template('pre.html')
 
 
-
 # http://localhost:5000/adminlogin/ - this will be the login page, we need to use both GET and POST requests
 @app.route('/adminlogin/', methods=['GET', 'POST'])
 def adlogin():

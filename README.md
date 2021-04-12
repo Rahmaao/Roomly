@@ -2,4 +2,4 @@
 
 start app with
 
-```python run.py```
+```python roomly\run.py```
