@@ -8,5 +8,4 @@ def index():
     req = requests.get('http://localhost:5000/api/rooms')
     data = req.content;
     json_data = json.loads(data)
-    print(json_data)
-    return render_template('test.html', data=json_data['rooms'])
+    return render_template('test.html', rooms=json_data['rooms'])

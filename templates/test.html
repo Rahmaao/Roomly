@@ -7,11 +7,11 @@
 </head>
 <body>
     <h1>Dummy rooms page</h1>
-    {% for datas in data %}
-        <h2>Roomname: {{ datas['name'] }}</h2>
-        <p>Bedspace : {{ datas['bedspace']}}</p>
-        <p>Bathroom : {{ datas['bathroom']}}</p>
-        <p>Available : {{ datas['available']}}</p>
+    {% for room in rooms %}
+        <h2>Roomname: {{ room['name'] }}</h2>
+        <p>Bedspace : {{ room['bedspace']}}</p>
+        <p>Bathroom : {{ room['bathroom']}}</p>
+        <p>Available : {{ room['available']}}</p>
         <hr>
     {% endfor %}
 

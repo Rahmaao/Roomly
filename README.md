@@ -1,5 +1,3 @@
 # Roomly
 
-start app with
-
-```python roomly\run.py```
+start app with ```python run.py```
