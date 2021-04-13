@@ -24,7 +24,9 @@ class Config:
     TEMPLATES_FOLDER = 'templates'
 
     # Database
-    MYSQL_HOST = environ.get('MYSQL_HOST')
-    MYSQL_USER = environ.get('MYSQL_USER')
-    MYSQL_PASSWORD = environ.get('MYSQL_PASSWORD')
-    MYSQL_DB = environ.get('MYSQL_DB')
+    SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # MYSQL_HOST = environ.get('MYSQL_HOST')
+    # MYSQL_USER = environ.get('MYSQL_USER')
+    # MYSQL_PASSWORD = environ.get('MYSQL_PASSWORD')
+    # MYSQL_DB = environ.get('MYSQL_DB')
