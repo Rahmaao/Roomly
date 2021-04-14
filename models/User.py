@@ -29,6 +29,9 @@ class User(db.Model):
     password = db.Column(
         db.String(125)
         )
+    isAdmin = db.Column(
+        db.Boolean
+        )
 
 
     # This is a Model method for creating user entries.
@@ -50,10 +53,11 @@ class User(db.Model):
 
     # Add set password and checkpassword Model method
 
-    def __init__(self, email, username, password):
+    def __init__(self, email, username, password, isAdmin = False):
         self.email = email
         self.username = username
         self.password = password
+        self.isAdmin = isAdmin
 
     def __repr__(self):
         return '<User %r>'%self.username
