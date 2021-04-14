@@ -1,6 +1,7 @@
 from app import app
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+from passlib.hash import pbkdf2_sha256 as sha256
 
 
 # initialize the db here
@@ -35,6 +36,16 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def find_by_username(cls, username):
+        return cls.query.filter_by(username = username).first()
+
+    # To implement set password method-- encryption
+
+    @staticmethod
+    def check_password(candidate_password, password):
+        return candidate_password == password
 
 
     # Add set password and checkpassword Model method
