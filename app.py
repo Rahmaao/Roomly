@@ -3,7 +3,7 @@ from flask import Flask
 app = Flask(__name__)
 app.config.from_object('config.Config')
 
-
+from routes import auth
 from routes import viewRoutes
 from routes import roomRoutes
 from routes import userRoutes

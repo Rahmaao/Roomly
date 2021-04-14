@@ -6,8 +6,7 @@
 # The other imports are sql_alchemy modules to help us with our database CRUD operations
 from app import app
 from flask_sqlalchemy import SQLAlchemy
-from marshmallow_sqlalchemy import ModelSchema, SQLAlchemyAutoSchema, auto_field
-from marshmallow import fields
+from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 
 # initialize the db here
 db = SQLAlchemy(app)
@@ -17,27 +16,31 @@ db = SQLAlchemy(app)
 class Room(db.Model):
 
     # Set table name
-    __tablename__='room'
+    __tablename__='rooms'
     # Define Room columns
 
     id = db.Column(
         db.Integer, 
         primary_key=True
-    )
+        )
+
     name = db.Column(
-        db.String, 
+        db.String(4), 
         unique=True, 
         nullable=False
-    )
+        )
+
     available = db.Column(
         db.Boolean
-    )
+        )
+
     bathroom = db.Column(
         db.Boolean
-    )
+        )
+
     bedspace = db.Column(
         db.Integer
-    )
+        )
     
     # Many to One Relationship to be implemented
     # occupants = db.relationship('User', backref='room', lazy=True)
@@ -67,7 +70,7 @@ class Room(db.Model):
 db.create_all()
 
 # Omo. I no too get this one. Just copy and past and edit to
-# suit the Model you're using.
+# suit the Model you're using. It's very important
 class RoomSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Room
@@ -75,11 +78,3 @@ class RoomSchema(SQLAlchemyAutoSchema):
         # When foriegn keys are implemented we add this
         # include_fk = True
         sqla_session = db.session
-
-    # id = auto_field()
-    # name =
-    # id = fields.Number(dump_only = True)
-    # name = fields.String(required= True)
-    # available = fields.Boolean()
-    # bathroom = fields.Boolean()
-    # bedspace = fields.Number()

@@ -31,3 +31,8 @@ def register():
 
         print(result.status_code);
     return render_template('test_register.html', data='')
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        data = request.form.to_dict()
