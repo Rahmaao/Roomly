@@ -1,5 +1,5 @@
 ''''This handles all requests to /rooms route.
-imports Rooms, RoomSchmea model
+imports Rooms, RoomSchema model
 '''
 
 from models.Room import Room, RoomSchema
@@ -30,11 +30,15 @@ def get_rooms():
 # Use this route for POST request on /rooms
 @app.route('/api/rooms', methods=['POST'])
 def create_room():
+
+    #To be refactored
+    # get json data from request
+    # 
+        
     data = request.get_json()
     room_schema = RoomSchema()
     try: 
         room = room_schema.load(data)
-        print(room)
 
     # Fix the exception handler
     except ValidationError as exec:

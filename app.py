@@ -6,6 +6,7 @@ app.config.from_object('config.Config')
 
 from routes import viewRoutes
 from routes import roomRoutes
+from routes import userRoutes
 
 # authors.index()
 

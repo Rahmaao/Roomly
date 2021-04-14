@@ -18,9 +18,9 @@ class Room(db.Model):
     # Define Room columns
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, unique=True, nullable=False)
-    available = db.Column(db.Boolean, default=True)
-    bathroom = db.Column(db.Boolean, default=True)
-    bedspace = db.Column(db.Integer, default=3, nullable=False)
+    available = db.Column(db.Boolean)
+    bathroom = db.Column(db.Boolean)
+    bedspace = db.Column(db.Integer)
     
     # Many to One Relationship to be implemented
     # occupants = db.relationship('User', backref='room', lazy=True)
