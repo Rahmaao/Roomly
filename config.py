@@ -16,8 +16,7 @@ class Config:
 
     # Set Flask config Variables
 
-    FLASK_ENV = environ.get('FLASK_ENV')
-    FLASK_APP = 'app.py'
+
     DEBUG = True
     TESTING = True
     SECRET_KEY = environ.get('APP_SECRET_KEY')
