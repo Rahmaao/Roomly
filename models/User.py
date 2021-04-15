@@ -41,8 +41,8 @@ class User(db.Model):
         return self
 
     @classmethod
-    def find_by_username(cls, username):
-        return cls.query.filter_by(username = username).first()
+    def find_by_username(self, username):
+        return self.query.filter_by(username = username).first()
 
     # To implement set password method-- encryption
 

@@ -52,6 +52,43 @@ class Room(db.Model):
         db.session.add(self)
         db.session.commit()
         return self
+
+    @classmethod
+    def find_by_id(self, id):
+        return self.query.get(id)
+
+    @classmethod
+    def delete_by_id(self, id):
+
+        # Find record by id. Delete record 
+        record = self.find_by_id(id)
+        db.session.delete(record)
+        db.session.commit()
+        return self
+
+    @classmethod
+    def update_by_id(self, id, fields):
+
+        # We don't have to check for id. 
+        # That was done before we called this method. 
+        # Just find the record
+        record = self.query.filter_by(id = id).first()
+
+        # Iterate over values in fields dict, check if there are in
+        # class atrributes (i.e part of our table columns)
+        # Change as appropriate
+        print('here')
+        for field in [*fields]:
+        # try: 
+            print(f'Old record {record.field}')
+            record.field = fields[field]
+            print(f'New record {record.field}')
+
+        # except AttributeError as err:
+        #     return err
+        db.session.commit()
+        return record
+        # return result
     
     #Initialization method
     def __init__(self, name, available = True, bathroom = False, bedspace = 3):

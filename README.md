@@ -1,3 +1,3 @@
 # Roomly
 
-start app with ```python run.py```
+start app with ```flask run```

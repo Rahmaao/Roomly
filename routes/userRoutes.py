@@ -2,11 +2,18 @@
 Imports  User, UserSchema
 '''
 
-from models.User import User, UserSchema
+from models.User import User, UserSchema, db
 from flask import make_response, jsonify, request
 from marshmallow.exceptions import *
 from http import HTTPStatus
 from app import app
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import get_jwt
+from flask_jwt_extended import jwt_required
+from flask_jwt_extended import JWTManager
+
+
+jwt = JWTManager(app)
 
 @app.route('/api/users', methods=['GET'])
 def get_all_users():
@@ -30,23 +37,28 @@ def get_all_users():
     
     return make_response(jsonify({"users": users}))
 
-
 @app.route('/api/users', methods=['POST'])
 def create_user():
-   #
-   
     # print(request)
-    data = request.get_json()
-    print(data)
+    data = request.json
     user_schema = UserSchema() # This is the only line that changes
     try:
         user = user_schema.load(data)
         print('Here')
     except Exception as exec:
-        print(exec.messages)
+        # print(exec)
         return {
-            'message' : "Validation errors", 'errors': exec.messages
+            'message' : "Validation errors",
         }, HTTPStatus.BAD_REQUEST
 
     result = user_schema.dump(user.create())
     return make_response(jsonify({"user": result }))
+
+
+@app.route('/api/profile')
+@jwt_required()
+def get_profile():
+
+    data = get_jwt()
+    # print(data)
+    return make_response(jsonify(data))

@@ -1,4 +1,4 @@
-from flask import make_response, jsonify, request, render_template
+from flask import make_response, jsonify, request, render_template, session, redirect, url_for
 from app import app
 import json, requests
 
@@ -32,7 +32,52 @@ def register():
         print(result.status_code);
     return render_template('test_register.html', data='')
 
+
+# Front end /login route handler. Send request to /api/login with json data
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login(msg=''):
+
+    # If post request is made
     if request.method == 'POST':
+
+        # Get form data. Convert to dictionary
         data = request.form.to_dict()
+
+        # Send acutal request to /api/login with dictionary data. Get response
+        req = requests.post(url = 'http://localhost:5000/api/login', json=data)
+
+        # Convert the content which contains token of the response to json. Save to data
+        data = req.content
+        json_data = json.loads(data)
+        
+
+        # check for token in response
+        if 'token' in json_data:
+        
+            # add token to session
+            session['token'] = json_data['token']
+
+            # redirect to /profile
+            return redirect('/profile')
+
+        return render_template('test_login.html', msg=json_data['message'])
+
+    return render_template('test_login.html', msg='')
+
+@app.route('/profile', methods=['GET'])
+def profile():
+
+    if not 'token' in session:
+        # Not logged in
+        return redirect(url_for('login', msg='Please Log in'))
+    
+    access_token = session['token']
+
+    req = requests.get(url="http://localhost:5000/api/profile", headers={'Content-Type':'application/json', 
+                                            'Authorization': 'Bearer {}'.format(access_token) })
+
+
+    data = req.content
+    print(data)
+    json_data = json.loads(data)
+    return render_template('test_profile.html', data=json_data['sub'])
