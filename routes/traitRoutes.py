@@ -2,14 +2,12 @@
 imports Rooms, RoomSchema model
 '''
 
-from models.Trait import Traits, TraitsSchema, db
+from create_db import Traits, TraitsSchema, db
 from flask import make_response, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
 from http import HTTPStatus
 from app import app
-
-# db = SQLAlchemy(app)
 
 
 trait_schema = TraitsSchema()
@@ -105,7 +103,7 @@ def update_trait_by_id(id):
 
 
     if 'traits' in data:
-        get_room.name = data['traits']
+        get_trait.traits = data['traits']
 
     db.session.commit()
 

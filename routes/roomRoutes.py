@@ -2,7 +2,7 @@
 imports Rooms, RoomSchema model
 '''
 
-from models.Room import Room, RoomSchema, db
+from create_db import Room, RoomSchema, db, User, UserSchema
 from flask import make_response, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
@@ -122,15 +122,27 @@ def update_room_by_id(id):
     
 
 
+
+# I'm not sure these routes work just yet
 # Route to assign users to room
-@app.route('/api/rooms/<id>/users', methods=['GET'])
-def get_users_by_room():
+@app.route('/api/rooms/<id>/occupants', methods=['GET'])
+def get_users_by_room(id):
+
+    # Make a request to to api/users/
+    get_users = User.query.filter_by(room_id = id)
+    user_schema = UserSchema(many=True)    
+
+    users = user_schema.dump(get_rooms)
+
+    # filter by room_id
 
     # Nested routes
 
     # Get room
     # Return all the occupants of the room
-    return make_response({"message": "success"}, 200)
+    return make_response({ "message": "success",
+                            "users": users,
+                            "results": len(users) }, 200)
 
 
 @app.route('/api/rooms/<id>/users', methods=['POST'])
@@ -138,11 +150,20 @@ def add_user_to_room(id):
 
     # Nested routes Really?
 
+    # Add room.id = id to request.data
+    data = request.json
+    data['room'] = id
+
+    # Send request to /users/
+    user_schema = UserSchema()
+    user = user_schema.load(data)
+    result = user_schema.dump(user.create())
+
     # Get room
     # Get user id
     
     # Add id to the occupant field
-    # db.session.commi()
+    db.session.commi()
 
-    return make_response({"message":"success"})
+    return make_response({"message":"success", "user": result})
 

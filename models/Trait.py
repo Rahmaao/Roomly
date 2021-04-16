@@ -11,6 +11,8 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 # initialize the db here
 db = SQLAlchemy(app)
 
+
+
 class Traits(db.Model):
 
     # Set table name
