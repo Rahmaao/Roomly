@@ -1,5 +1,6 @@
 from app import app
 from flask_sqlalchemy import SQLAlchemy
+from marshmallow import fields
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from passlib.hash import pbkdf2_sha256 as sha256
 
@@ -30,10 +31,22 @@ class Hostel(db.Model):
         db.Integer
     )
 
-    # rooms = db.relationship(
-    #     'Room', 
-    #     lazy='select',
-    #     backref = db.backref('hostel', lazy='joined'))
+
+    @classmethod
+    def create(self):
+        db.session.add()
+        db.session.commit()
+        return self
+
+    @classmethod
+    def find_by_id(self, id):
+        return self.query.get(id)
+
+
+    def __repr__(self):
+        return f'<Hostel {self.name}>'
+
+    
 
 # Initialize Room table
 class Room(db.Model):
@@ -65,16 +78,15 @@ class Room(db.Model):
         db.Integer
         )
     
-    # hostel_id = db.Column(
-    #     db.Integer,
-    #     db.ForeignKey('hostels.id'),
-    #     nullable=True
-    #     )
-    
-    # Many to One Relationship to be implemented
-    # occupants = db.relationship('User', backref='room', lazy=True)
+    hostel_id = db.Column(
+        db.Integer,
+        db.ForeignKey('hostels.id'),
+        )
 
-    # hostel = db.relationship('')
+    hostel = db.relationship(
+        'Hostel', 
+        backref = "rooms"
+        )
     
     # Create method
     def create(self):
@@ -95,36 +107,38 @@ class Room(db.Model):
         db.session.commit()
         return self
 
-    @classmethod
-    def update_by_id(self, id, fields):
+    # @classmethod
+    # def update_by_id(self, id, fields):
 
-        # We don't have to check for id. 
-        # That was done before we called this method. 
-        # Just find the record
-        record = self.query.filter_by(id = id).first()
+    #     # We don't have to check for id. 
+    #     # That was done before we called this method. 
+    #     # Just find the record
+    #     record = self.query.filter_by(id = id).first()
 
-        # Iterate over values in fields dict, check if there are in
-        # class atrributes (i.e part of our table columns)
-        # Change as appropriate
-        print('here')
-        for field in [*fields]:
-        # try: 
-            print(f'Old record {record.field}')
-            record.field = fields[field]
-            print(f'New record {record.field}')
+    #     # Iterate over values in fields dict, check if there are in
+    #     # class atrributes (i.e part of our table columns)
+    #     # Change as appropriate
+    #     print('here')
+    #     for field in [*fields]:
+    #     # try: 
+    #         print(f'Old record {record.field}')
+    #         record.field = fields[field]
+    #         print(f'New record {record.field}')
 
-        # except AttributeError as err:
-        #     return err
-        db.session.commit()
-        return record
+    #     # except AttributeError as err:
+    #     #     return err
+    #     db.session.commit()
+    #     return record
         # return result
     
     #Initialization method
-    def __init__(self, name, available = True, bathroom = False, bedspace = 3):
+    def __init__(self, name, hostel, available = True, bathroom = False, bedspace = 3 ):
         self.name = name
+        self.hostel = hostel
         self.available = available 
         self.bathroom = bathroom
         self.bedspace = bedspace 
+
 
     
     # This is in the documentation too. I guess it's how the Model
@@ -222,14 +236,6 @@ class Traits(db.Model):
 # Create User model
 db.create_all()
 
-class HostelSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Hostel
-        load_instance = True
-        # include_fk = True
-        sqla_session = db.session
-
-# 
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
@@ -237,16 +243,24 @@ class UserSchema(SQLAlchemyAutoSchema):
         sqla_session = db.session
 
 
-# Omo. I no too get this one. Just copy and past and edit to
-# suit the Model you're using. It's very important
-
 class RoomSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Room
         load_instance = True
-        # When foriegn keys are implemented we add this
-        # include_fk = True
+        include_fk = True
         sqla_session = db.session
+
+
+class HostelSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Hostel
+        load_instance = True
+        sqla_session = db.session
+
+    rooms = fields.Nested(RoomSchema, many=True)
+
+
+
 
 
 class TraitsSchema(SQLAlchemyAutoSchema):

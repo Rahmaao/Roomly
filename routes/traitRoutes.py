@@ -2,7 +2,7 @@
 imports Rooms, RoomSchema model
 '''
 
-from create_db import Traits, TraitsSchema, db
+from database import Traits, TraitsSchema, db
 from flask import make_response, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *

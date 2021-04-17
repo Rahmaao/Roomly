@@ -2,7 +2,7 @@
 Imports  User, UserSchema
 '''
 
-from models.User import User, UserSchema, db
+from database import User, UserSchema, db
 from flask import make_response, jsonify, request
 from marshmallow.exceptions import *
 from http import HTTPStatus

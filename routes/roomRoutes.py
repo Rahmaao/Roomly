@@ -2,7 +2,7 @@
 imports Rooms, RoomSchema model
 '''
 
-from create_db import Room, RoomSchema, db, User, UserSchema
+from database import Room, RoomSchema, db, User, UserSchema, Hostel, HostelSchema
 from flask import make_response, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
@@ -37,13 +37,24 @@ def create_room():
     # get json data from request
     data = request.json
 
-    try: 
-        room = room_schema.load(data)
-    except ValidationError as exec:
-        return {
-            'message' : "Validation errors", 'errors': exec.messages
-        }, HTTPStatus.BAD_REQUEST
-    result = room_schema.dump(room.create())
+
+
+    get_hostel = Hostel.query.get(data['hostel'])
+
+
+    # data['hostel'] = get_hostel
+    new_room = Room(name=data['name'], hostel = get_hostel)
+
+    room_schema = RoomSchema()
+    result = room_schema.dump(new_room.create())
+
+    # try: 
+    #     room = room_schema.load(data)
+    # except ValidationError as exec:
+    #     return {
+    #         'message' : "Validation errors", 'errors': exec.messages
+    #     }, HTTPStatus.BAD_REQUEST
+    # result = room_schema.dump(room.create())
 
     return make_response(jsonify({"room": result}))
 
