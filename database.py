@@ -90,9 +90,14 @@ class User(db.Model):
         primary_key = True
     )
 
-    name = db.Column(
+    username = db.Column(
         db.String(255),
 
+    )
+
+    isAdmin = db.Column(
+        db.Boolean,
+        default = False
     )
 
     email = db.Column(
@@ -136,7 +141,7 @@ class User(db.Model):
 
 #     trait_group = db.Relationship('User', backref='traits')
 
-db.create_all()
+# db.create_all()
 
 
 class UserSchema(SQLAlchemyAutoSchema):
@@ -155,7 +160,7 @@ class RoomSchema(SQLAlchemyAutoSchema):
         sqla_session = db.session
         include_fk = True
 
-    occupants = fields.Nested(UserSchema, many = True, only=["name", "id"])
+    occupants = fields.Nested(UserSchema, many = True, only=["username", "id"])
 
 
 # On the reference Schema, you'll speciffy the backref field like so.

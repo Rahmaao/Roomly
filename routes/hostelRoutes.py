@@ -90,23 +90,22 @@ class SingleHostel(Resource):
 
         db.session.commit()
 
-        return hostel_schema.dump(hostel)
+        hostel = hostel_schema.dump(hostel)
+
+        return {"hostel" : hostel}
 
     def delete(self, id):
 
         # Query hostel
-        # hostel_schema = HostelSchema()
         hostel = Hostel.query.get(id)
-        # hostel = hostel_schema.dump(ho)
-
-        # Check if hostel exits
+       
+       # Check if hostel exitsts
         if not hostel:
             return {
                 "No hostel with that ID"
             }
 
         # Delete hostel record
-
         db.session.delete(hostel)
         db.session.commit()
 
