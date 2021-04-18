@@ -6,6 +6,7 @@ from database import Room, RoomSchema, db, User, UserSchema, Hostel, HostelSchem
 from flask import make_response, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
+
 from http import HTTPStatus
 from app import app
 
@@ -33,19 +34,31 @@ def get_rooms():
 @app.route('/api/rooms', methods=['POST'])
 def create_room():
     #To be refactored
-
+    hostel_schema = HostelSchema()
+    room_schema = RoomSchema()
     # get json data from request
     data = request.json
 
+    get_hostel = Hostel.query.get(data['hostel'])  
 
-
-    get_hostel = Hostel.query.get(data['hostel'])
+    del data['hostel']
+    new_room = room_schema.load(data)
 
 
     # data['hostel'] = get_hostel
-    new_room = Room(name=data['name'], hostel = get_hostel)
+    # new_room = Room(name=data['name'], hostel = get_hostel)
 
-    room_schema = RoomSchema()
+    hostel = hostel_schema.dump(get_hostel)
+
+    room = room_schema.dump(new_room)
+
+    room['hostel'] = hostel;
+
+    new_room = room_schema.load(room)
+
+
+
+
     result = room_schema.dump(new_room.create())
 
     # try: 

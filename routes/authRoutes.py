@@ -1,4 +1,4 @@
-from models.User import User, UserSchema
+from database import User, UserSchema
 from controllers import auth
 from flask import make_response, jsonify, request, session
 from marshmallow.exceptions import *
