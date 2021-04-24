@@ -8,7 +8,8 @@ from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
 from flask_restful import reqparse, abort, Api, Resource
 from flask_jwt_extended import jwt_required, current_user
-from app import app, jwt
+from app import app
+from routes.authRoutes import jwt
 
 api = Api(app)
 

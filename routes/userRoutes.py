@@ -13,8 +13,9 @@ from flask_jwt_extended import get_jwt
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager, current_user
 from controllers.factoryController import get_all, create_one, get_one, delete_one
+from routes.authRoutes import jwt
 
-jwt = JWTManager(app)
+
 api = Api(app)
 
 

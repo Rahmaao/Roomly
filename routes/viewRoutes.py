@@ -1,6 +1,7 @@
 from flask import make_response, jsonify, request, render_template, session, redirect, url_for
-from app import app, jwt
+from app import app
 import json, requests
+from routes.authRoutes import jwt
 from flask_jwt_extended import jwt_required
 
 

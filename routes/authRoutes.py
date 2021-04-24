@@ -5,9 +5,10 @@ from marshmallow.exceptions import *
 from flask_restful import Api, Resource, reqparse
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, set_access_cookies, unset_jwt_cookies, get_jwt, current_user
-from app import app, jwt
+from app import app
 
 api = Api(app)
+jwt = JWTManager(app)
 
 
 class RegisterUser(Resource):

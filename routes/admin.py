@@ -2,7 +2,7 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from database import Hostel, Room, User, Trait, db
 from app import app
-from app import jwt
+from routes.authRoutes import jwt
 from flask_jwt_extended import jwt_required
 
 
