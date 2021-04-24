@@ -1,14 +1,21 @@
 from flask import make_response, jsonify, request, render_template, session, redirect, url_for
-from app import app
+from app import app, jwt
 import json, requests
+from flask_jwt_extended import jwt_required
+
 
 
 @app.route('/', methods=['GET'])
 def index():
-    req = requests.get('http://localhost:5000/api/rooms')
-    data = req.content;
-    json_data = json.loads(data)
-    return render_template('test.html', rooms=json_data['rooms'])
+    return render_template('pre.html')
+
+
+# @app.route('/', methods=['GET'])
+# def index():
+#     req = requests.get('http://localhost:5000/api/rooms')
+#     data = req.content;
+#     json_data = json.loads(data)
+#     return render_template('test.html', rooms=json_data['rooms'])
 
 
 
@@ -62,22 +69,26 @@ def login(msg=''):
 
         return render_template('test_login.html', msg=json_data['message'])
 
-    return render_template('test_login.html', msg='')
+    return render_template('login.html', msg='')
 
+@jwt_required
 @app.route('/profile', methods=['GET'])
 def profile():
 
-    if not 'token' in session:
-        # Not logged in
-        return redirect(url_for('login', msg='Please Log in'))
+    # if not 'token' in session:
+    #     # Not logged in
+    #     return redirect(url_for('login', msg='Please Log in'))
     
-    access_token = session['token']
-
-    req = requests.get(url="http://localhost:5000/api/profile", headers={'Content-Type':'application/json', 
-                                            'Authorization': 'Bearer {}'.format(access_token) })
+    # access_token = session['token']
 
 
     data = req.content
     print(data)
     json_data = json.loads(data)
     return render_template('test_profile.html', data=json_data['sub'])
+
+@app.route('/logout', methods=['GET'])
+def logout():
+    del session['token']
+
+    return redirect('/')

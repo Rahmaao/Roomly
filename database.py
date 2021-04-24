@@ -5,9 +5,10 @@ from app import app
 
 db = SQLAlchemy(app)
 
+
 class Hostel(db.Model):
 
-    __tablename__ = 'hostels'
+    __tablename__ = 'hostel'
 
     id = db.Column(
         db.Integer,
@@ -16,11 +17,13 @@ class Hostel(db.Model):
 
     name = db.Column(
         db.String(40),
-        unique=True
+        unique=True,
+        nullable=False
     )
 
     price = db.Column(
-        db.Integer
+        db.Integer,
+        nullable=False
     )
 
     def create(self):
@@ -29,11 +32,11 @@ class Hostel(db.Model):
         return self
 
     def __repr__(self):
-        return f'<Hostel {self.name}'
+        return f'<Hostel {self.name}>'
 
 class Room(db.Model):
 
-    __tablename__ = 'rooms'
+    __tablename__ = 'room'
 
     id = db.Column(
         db.Integer,
@@ -57,7 +60,7 @@ class Room(db.Model):
 
     hostel_id = db.Column(
         db.Integer,
-        db.ForeignKey('hostels.id')
+        db.ForeignKey('hostel.id')
     )
 
     # The idea is that we'll be able to specify the hostel
@@ -81,9 +84,16 @@ class Room(db.Model):
         return f'<Room {self.name}>'
 
 
+# Table of users and traits
+user_trait = db.Table('user_trait',
+        db.Column('trait_id', db.Integer, db.ForeignKey('trait.id'), primary_key=True),
+        db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True)
+        )
+
+
 class User(db.Model):
 
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = db.Column(
         db.Integer,
@@ -109,12 +119,15 @@ class User(db.Model):
 
     room_id = db.Column(
         db.Integer,
-        db.ForeignKey('rooms.id')
+        db.ForeignKey('room.id')
     )
 
     room = db.relationship(
         'Room', backref = 'occupants'
     )
+
+    traits = db.relationship('Trait', secondary=user_trait, lazy='joined',
+    backref=db.backref('users', lazy=True))
 
 
     def create(self):
@@ -123,25 +136,36 @@ class User(db.Model):
         return self
 
     def __repr__(self):
-        return f'<Room {self.name}>'
+        return f'<User {self.username}>'
 
 
-# class Trait(db.Model):
+class Trait(db.Model):
 
-#     __tablename__: 'traits'
+    __tablename__: 'trait'
 
-#     id = db.Column(
-#         db.Integer,
-#         primary_key = True
-#     )
+    id = db.Column(
+        db.Integer,
+        primary_key = True
+    )
 
-#     name = db.Column(
-#         db.String(255)
-#     )
+    trait = db.Column(
+        db.String(255),
+        nullable=False
+    )
+    def create(self):
+        db.session.add(self)
+        db.session.commit()
+        return self
 
-#     trait_group = db.Relationship('User', backref='traits')
-
+    def __repr__(self):
+        return f'<Triat {self.trait}>'
 # db.create_all()
+
+class TraitSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Trait
+        load_instance = True
+        sqla_session = db.session
 
 
 class UserSchema(SQLAlchemyAutoSchema):
@@ -151,6 +175,8 @@ class UserSchema(SQLAlchemyAutoSchema):
         sqla_session = db.session
         include_fk = True
 
+    traits = fields.Nested(TraitSchema, many=True)
+
 
 
 class RoomSchema(SQLAlchemyAutoSchema):
@@ -158,7 +184,6 @@ class RoomSchema(SQLAlchemyAutoSchema):
         model = Room
         load_instance = True
         sqla_session = db.session
-        include_fk = True
 
     occupants = fields.Nested(UserSchema, many = True, only=["username", "id"])
 

@@ -2,111 +2,81 @@
 imports Rooms, RoomSchema model
 '''
 
-from database import Traits, TraitsSchema, db
+from database import Trait, TraitSchema, db
 from flask import make_response, jsonify, request
+from flask_restful import reqparse, Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
 from http import HTTPStatus
 from app import app
 
+api = Api(app)
 
-trait_schema = TraitsSchema()
 
-# Use the route for  GET request on /traits
-@app.route('/api/traits', methods=['GET'])
-def get_traits():
+class TraitList(Resource):
+    """
+    Resource for /api/hostels endpoint
+    """
+    def get(self):
+        traits = Trait.query.all()
+        traits = TraitSchema(many=True).dump(traits)
 
-    get_traits = Traits.query.all()
-    trait_schema = TraitsSchema(many=True)
-    try:
-        traits = trait_schema.dump(get_traits)
-    except ValidationError as exec:
-        return {
-            'message' : "Validation errors", 'errors': exec.messages
-        }, HTTPStatus.BAD_REQUEST
+        return jsonify({
+            "traits" : traits,
+            "results": len(traits)
+        })
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('trait')
+
+        data = parser.parse_args()
+
+        trait = TraitSchema().load(data)
+        trait = TraitSchema().dump(trait.create())
+
+        return jsonify({
+            'trait' : trait
+        })
+
+class SingleTrait(Resource):
+    """ 
+    Resource for getting a single Trait
+    """
+    def get(self, id):
+        trait = Trait.query.get_or_404(id)
+        trait = TraitSchema().dump(trait)
+
+        return jsonify({
+            'trait' : trait
+        })
+    def patch(self, id):
+        trait = Trait.query.get_or_404(id)
+
+        parser = reqparse.RequestParser()
+        parser.add_argument('trait')
+        data = parser.parse_args()
+
+        if data['trait'] != None:
+            trait.trait = data['trait']
+
+        db.session.commit()
+
+        trait = TraitSchema().dump(trait)
+        return ({
+            'trait' : trait
+        })
+
+
+
+    def delete(self, id):
+        trait = Trait.query.get_or_404(id)
+
+        db.session.delete(trait)
+        db.session.commit()
+
+        return '', 204
+
     
-    return make_response(jsonify({"traits": traits, "results": len(traits)}))
-
-# Use this route for POST request on /rooms
-@app.route('/api/traits', methods=['POST'])
-def add_traits():
-    #To be refactored
-
-    # get json data from request
-    data = request.json
-
-    try: 
-        trait = trait_schema.load(data)
-    except ValidationError as exec:
-        return {
-            'message' : "Validation errors", 'errors': exec.messages
-        }, HTTPStatus.BAD_REQUEST
-    result = trait_schema.dump(trait.create())
-
-    return make_response(jsonify({"trait": result}))
-
-
-@app.route('/api/traits/<id>', methods=['GET'])
-def get_trait_by_id(id):
-
-    # Query a trait
-    get_trait = Traits.query.get(id)
-    result = trait_schema.dump(get_trait)
-
-    # Test for result
-    if not result:
-        return make_response(jsonify({
-            "message": "No trait with that id."
-        }))
-
-    # Return trait
-    return trait_schema.dump(get_trait)
-
-@app.route('/api/traits/<id>', methods=['DELETE'])
-def delete_trait_by_id(id):
-
-    # Query trait data
-    get_trait = Traits.query.get(id)
-    trait = trait_schema.dump(get_trait)
-
-    # If empty result, trait with ID doesn't exist
-    if not trait:
-        return make_response(jsonify({ 'message' : 
-        'Trait with this ID does not exist'}))
-        
-    db.session.delete(get_trait)
-    db.session.commit()
-
-    # Send response
-    return '', 204
-
-
-
-
-@app.route('/api/traits/<id>', methods=['PATCH'])
-def update_trait_by_id(id):
-
-    # The difference between a PATCH and PUT
-    # request is that PATCH modifies entry. Meanwhile
-    # PUT actualaly clears the old entry and reenters the values
-
-    # Get json data from response
-
-    data = request.json
-    get_trait = Traits.query.get(id)
-
-    # Test for result
-    if not get_trait:
-        return make_response(jsonify({
-            "message": "No trait with that id."
-        }))
-
-
-    if 'traits' in data:
-        get_trait.traits = data['traits']
-
-    db.session.commit()
-
-    return trait_schema.dump(get_trait)
-    
-
+api.add_resource(TraitList, '/api/traits')
+api.add_resource(SingleTrait, '/api/traits/<id>')

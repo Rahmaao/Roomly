@@ -26,9 +26,10 @@ class Config:
     # Database
     SQLALCHEMY_DATABASE_URI = environ.get('SQLALCHEMY_DATABASE_URI')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # MYSQL_HOST = environ.get('MYSQL_HOST')
-    # MYSQL_USER = environ.get('MYSQL_USER')
-    # MYSQL_PASSWORD = environ.get('MYSQL_PASSWORD')
-    # MYSQL_DB = environ.get('MYSQL_DB')
 
+    # Json Web Token
     JWT_SECRET_KEY=environ.get('JWT_SECRET_KEY')
+    JWT_TOKEN_LOCATION = ["headers", "cookies", "json"]
+
+    # Flask Admin
+    FLASK_ADMIN_SWATCH ='cerulean'

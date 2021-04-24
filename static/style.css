@@ -24,17 +24,17 @@ body {
     padding: 20px 0 20px 0;
     border-bottom: 1px solid #dee0e4;
 }
-.login .links, .register .links {
+/* .login .links, .register .links {
     display: flex;
     padding: 0 15px;
-}
+} */
 
-/* .login .links, .register .links {
+.login .links, .register .links {
     display: flex; 
     padding: 0 15px;
     margin: auto;
     width: 50%; 
-} */
+}
 
 
 .login .links a, .register .links a {
