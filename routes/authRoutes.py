@@ -1,11 +1,11 @@
 from database import User, UserSchema
 from controllers import auth
-from flask import make_response, jsonify, request, session
+from flask import make_response, jsonify, request
 from marshmallow.exceptions import *
 from flask_restful import Api, Resource, reqparse
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, JWTManager, set_access_cookies, unset_jwt_cookies, get_jwt, current_user
-from app import app
+from app import app, session
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -67,13 +67,22 @@ class LoginUser(Resource):
 
         # Check password
         if check_password_hash(user.password, data['password']):
-            additional_claims = {"id": user.id}
-            response = jsonify({
-                'message': 'login successful'
-            })
+            if user.username == 'admin':
+                # session['user'] = 'admin'
+                # session['admin'] = True
+                access_token = create_access_token(identity=user.id)
+            else:
+                additional_claims = {"id": user.id}
+                access_token = create_access_token(identity=user.id, additional_claims=additional_claims)
+
 
             # Import access cookies
-            access_token = create_access_token(identity=user.id, additional_claims=additional_claims)
+            print(session)
+            response = jsonify({
+                'message': 'login successful',
+                'token': access_token
+            })
+
             set_access_cookies(response, access_token)
 
             return response
@@ -84,6 +93,8 @@ class LoginUser(Resource):
 class LogoutUser(Resource):
     def get(self):
         response = jsonify({"msg": "Logout successful"})
+        session.pop('user', None)
+        sessoin.pop('admin', None)
         unset_jwt_cookies(response)
         return response
 

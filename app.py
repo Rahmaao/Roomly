@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, session
 # from flask_jwt_extended import JWTManager```
 
 app = Flask(__name__)

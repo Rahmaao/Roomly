@@ -1,8 +1,9 @@
-from flask import make_response, jsonify, request, render_template, session, redirect, url_for
-from app import app
+from flask import make_response, jsonify, request, render_template, redirect, url_for
+from app import app, session
 import json, requests
 from routes.authRoutes import jwt
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, get_jwt_identity, set_access_cookies
+from database import User
 
 
 
@@ -55,41 +56,50 @@ def login(msg=''):
         req = requests.post(url = 'http://localhost:5000/api/login', json=data)
 
         # Convert the content which contains token of the response to json. Save to data
-        data = req.content
-        json_data = json.loads(data)
-        
+        json_data = json.loads(req.content)
+
+        # Since we are setting it in tokens, we need a differnt way to check.
+
 
         # check for token in response
         if 'token' in json_data:
-        
             # add token to session
             session['token'] = json_data['token']
 
-            # redirect to /profile
-            return redirect('/profile')
+            response = redirect('/profile')
 
-        return render_template('test_login.html', msg=json_data['message'])
+            # Set this always
+            set_access_cookies(response, session['token'])
+
+            return response
+  
+        return render_template('login.html', msg=json_data['message'])
 
     return render_template('login.html', msg='')
 
-@jwt_required
+
 @app.route('/profile', methods=['GET'])
+@jwt_required()
 def profile():
 
     # if not 'token' in session:
     #     # Not logged in
     #     return redirect(url_for('login', msg='Please Log in'))
     
-    # access_token = session['token']
+    # # access_token = session['token']
+    user_id = get_jwt_identity()
 
+    user = User.query.get(user_id)
 
-    data = req.content
-    print(data)
-    json_data = json.loads(data)
-    return render_template('test_profile.html', data=json_data['sub'])
+    if user.username =='admin':
+        session['user'] = 'admin'
+        return redirect('/admin')
 
+    # data = req.content
+    # print(data)
+    # json_data = json.loads(data)
+    return render_template('test_profile.html', data=user.username)
 @app.route('/logout', methods=['GET'])
 def logout():
-    del session['token']
-
+    req = requests.get('http://localhost:5000/api/logout')
     return redirect('/')
