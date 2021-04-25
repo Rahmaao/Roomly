@@ -13,7 +13,7 @@ from flask_jwt_extended import get_jwt
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended import JWTManager, current_user
 from controllers.factoryController import get_all, create_one, get_one, delete_one
-from routes.authRoutes import jwt
+from routes.authRoutes import jwt, admin_required
 
 
 api = Api(app)
@@ -21,6 +21,7 @@ api = Api(app)
 
 class UsersList(Resource):
 
+    @jwt_required()
     def get(self):
         data = get_all('user')
         return jsonify({
@@ -28,6 +29,9 @@ class UsersList(Resource):
            'results' : len(data) 
         })
 
+    
+    #locked ot admin
+    @admin_required()
     def post(self):
 
         # Parse necessary arguments
@@ -46,6 +50,8 @@ class UsersList(Resource):
             'user': user
         })
 class SingleUser(Resource):
+
+    @jwt_required()
     def get(self, id):
         user = get_one('user', id)
         return {
@@ -54,6 +60,7 @@ class SingleUser(Resource):
     def patch(self, id):
         pass
 
+    @admin_required()
     def delete(self, id):
         return delete_one('user', id)
 

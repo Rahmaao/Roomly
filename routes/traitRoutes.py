@@ -9,6 +9,8 @@ from flask_sqlalchemy import SQLAlchemy
 from marshmallow.exceptions import *
 from http import HTTPStatus
 from app import app
+from flask_jwt_extended import jwt_required
+from routes.authRoutes import jwt
 
 api = Api(app)
 
@@ -17,6 +19,8 @@ class TraitList(Resource):
     """
     Resource for /api/hostels endpoint
     """
+
+    @jwt_required()
     def get(self):
         traits = Trait.query.all()
         traits = TraitSchema(many=True).dump(traits)
@@ -26,6 +30,8 @@ class TraitList(Resource):
             "results": len(traits)
         })
 
+    #Admin only
+    @admin_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('trait')
@@ -43,6 +49,8 @@ class SingleTrait(Resource):
     """ 
     Resource for getting a single Trait
     """
+
+    @jwt_required()
     def get(self, id):
         trait = Trait.query.get_or_404(id)
         trait = TraitSchema().dump(trait)
@@ -50,6 +58,9 @@ class SingleTrait(Resource):
         return jsonify({
             'trait' : trait
         })
+
+     #Admin   
+    @admin_required()
     def patch(self, id):
         trait = Trait.query.get_or_404(id)
 

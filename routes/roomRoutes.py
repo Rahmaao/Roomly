@@ -21,6 +21,7 @@ room_schema = RoomSchema()
 
 
 class RoomList(Resource):
+    @jwt_required
     def get(self):
 
         # Query rooms
@@ -28,12 +29,15 @@ class RoomList(Resource):
         room_schema = RoomSchema(many=True)
 
         rooms = room_schema.dump(rooms)
-        return {
+        return jsonify({
             "rooms" : rooms,
             "results" : len(rooms),
-        }
+        })
 
+    @admin_required()
     def post(self):
+
+        # REquires Admin
 
         # Parse relevant fields
         parser = reqparse.RequestParser()
@@ -90,6 +94,7 @@ class RoomList(Resource):
 
 
 class SingleRoom(Resource):
+    @jwt_required()
     def get(self, id):
 
         room_schema = RoomSchema()
@@ -106,6 +111,7 @@ class SingleRoom(Resource):
             "room" : room
         }
 
+    @admin_required()
     def patch(self, id):
         data = request.json
         
@@ -136,6 +142,7 @@ class SingleRoom(Resource):
             "room" : room
         }
 
+    @admin_required()
     def delete(self, id):
 
         room = Room.query.get(id)
@@ -167,6 +174,7 @@ class UsersOnRoom(Resource):
             "users" : users
         })
     def post(self, id):
+        # Requires Admin?
         """
         This assigns a user to a room.
         """

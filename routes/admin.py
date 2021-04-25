@@ -8,6 +8,10 @@ from flask_jwt_extended import jwt_required
 
 class AdminView(ModelView):
 
+    '''
+    Admin view class with custom security
+    '''
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.static_folder = 'static'
@@ -20,7 +24,8 @@ class AdminView(ModelView):
             return redirect(url_for('index'))
 
 
-admin = Admin(app, name='Roomly-Admin', template_mode='bootstrap4', index_view=AdminView(Hostel, db.session, url='/admin', endpoint='admin')) 
+admin = Admin(app, name='Dashboard', template_mode='bootstrap4', url='/admin')
+# admin = Admin(app, name='Roomly-Admin', template_mode='bootstrap4', index_view=AdminView(Hostel, db.session, url='/admin', endpoint='admin')) 
 
 # Add Administrative views here
 # admin.add_view(ModelView(Hostel, db.session))

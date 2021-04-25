@@ -2,6 +2,7 @@ from database import Hostel, HostelSchema, db, Room, RoomSchema
 from flask_restful import reqparse, abort, Api, Resource
 from app import app
 from flask import jsonify, request
+from flask_jwt_extended import jwt_required, current_user
 from controllers.factoryController import get_all, create_one, get_one, delete_one
 
 api = Api(app)
@@ -11,6 +12,7 @@ class HostelList(Resource):
     Resource for /api/hostel endpoint
 
     """
+    @jwt_required()
     def get(self):
 
         data = get_all('hostel')
@@ -19,6 +21,8 @@ class HostelList(Resource):
             "results": len(data)
         }
     
+    # Requires Admin
+    @admin_required()
     def post(self):
         """
         Handles post requests to /api/hostel endpoint
@@ -42,6 +46,7 @@ class SingleHostel(Resource):
     Handles /api/hostel/<id> endpoint
     """
 
+    @jwt_required()
     def get(self, id):
         """
         Handles a get request returns a single hostel
@@ -51,6 +56,8 @@ class SingleHostel(Resource):
             "hostel" : hostel
         }
 
+    # Requires Admin
+    @admin_required()
     def patch(self, id):
 
         """
@@ -88,6 +95,8 @@ class SingleHostel(Resource):
 
         return {"hostel" : hostel}
 
+    # Requires Admin
+    @admin_required()
     def delete(self, id):
         return delete_one('hostel', id)
 
@@ -95,6 +104,7 @@ class RoomsOnHostel(Resource):
     """
     This resource handles requests to /api/hostels/<id>/rooms
     """
+    @jwt_required()
     def get(self, id):
         """
         Get all rooms with the id of the hostel on the endpoint
@@ -114,7 +124,9 @@ class RoomsOnHostel(Resource):
             'rooms' : rooms
         })
 
+    @admin_required()
     def post(self, id):
+        # Requires Admin
         
         """
         This create a room with the hostel field set to the hostel record with id
